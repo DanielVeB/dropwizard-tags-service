@@ -1,16 +1,61 @@
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+
 plugins {
-    id 'java'
+    id 'com.github.johnrengelman.shadow' version '1.2.4'
 }
 
-group 'com.comarch.danielkurosz'
 version '1.0-SNAPSHOT'
+group 'com.comarch.danielkurosz'
+description 'Sample Dropwizard REST with MongoDB '
+
+apply plugin: 'java'
+apply plugin: 'application'
 
 sourceCompatibility = 1.8
 
 repositories {
     mavenCentral()
 }
-
 dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.12'
+
+    compile 'io.dropwizard:dropwizard-core:1.2.0'
+    compile group: 'org.mongodb.morphia', name: 'morphia', version: '1.3.2'
+    compile group: 'org.mongodb.morphia', name: 'morphia-validation', version: '1.3.2'
+    compile group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.3'
+    compile group: 'com.google.code.gson', name: 'gson', version: '2.7'
+
+    // https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient
+    compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5'
+
+    testCompile 'org.mockito:mockito-core:2.7.22'
+    testCompile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
+    testCompile group: 'io.dropwizard', name: 'dropwizard-testing', version: '1.3.12'
+    testCompile 'junit:junit:4.12'
+    testCompile group: 'com.github.fakemongo', name: 'fongo', version: '2.1.1'
+
 }
+
+mainClassName = 'com.comarch.danielkurosz.TagsServiceApp'
+
+run {
+    args = ['server', 'config.yml']
+}
+
+shadowJar {
+    mergeServiceFiles()
+    exclude 'META-INF/*.DSA', 'META-INF/*.RSA', 'META-INF/*.SF'
+    manifest {
+        attributes 'Implementation-Title': rootProject.name
+        attributes 'Implementation-Version': rootProject.version
+        attributes 'Implementation-Vendor-Id': rootProject.group
+        attributes 'Build-Time': ZonedDateTime.now(ZoneId.of("UTC"))
+                .format(DateTimeFormatter.ISO_ZONED_DATE_TIME)
+        attributes 'Built-By': InetAddress.localHost.hostName
+        attributes 'Created-By': 'Gradle ' + gradle.gradleVersion
+        attributes 'Main-Class': mainClassName
+    }
+    archiveName 'sample-dropwizard.jar'
+}
+
