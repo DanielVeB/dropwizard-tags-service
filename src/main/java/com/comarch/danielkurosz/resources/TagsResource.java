@@ -34,7 +34,6 @@ public class TagsResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getTags(@PathParam("id") String id) throws AppException {
 
-        System.out.println(id);
         List<UserTagDTO> tags = tagsService.getTags(id);
 
         return Response.ok(tags).build();
