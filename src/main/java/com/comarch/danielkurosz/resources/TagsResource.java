@@ -3,6 +3,8 @@ package com.comarch.danielkurosz.resources;
 import com.codahale.metrics.annotation.Timed;
 import com.comarch.danielkurosz.data.TagEntity;
 import com.comarch.danielkurosz.data.UserTagsEntity;
+import com.comarch.danielkurosz.dto.UserTagDTO;
+import com.comarch.danielkurosz.exceptions.AppException;
 import com.comarch.danielkurosz.service.TagsService;
 
 import javax.ws.rs.GET;
@@ -30,13 +32,10 @@ public class TagsResource {
     @Timed
     @Path("/userid={id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getTags(@PathParam("id") String id){
+    public Response getTags(@PathParam("id") String id) throws AppException {
 
-        List<TagEntity> tags = new LinkedList<>();
-        TagEntity tagEntity = new TagEntity();
-        tagEntity.setKey(1);
-        tagEntity.setValue("Premium account");
-        tags.add(tagEntity);
+        System.out.println(id);
+        List<UserTagDTO> tags = tagsService.getTags(id);
 
         return Response.ok(tags).build();
     }

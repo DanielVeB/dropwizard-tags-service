@@ -7,26 +7,25 @@ import org.mongodb.morphia.annotations.Id;
 @Embedded
 public class TagEntity {
 
-    @Id
-    private int key;
-    private String value;
+    private int tag_id;
+    private String tag_value;
 
     public TagEntity(){}
 
-    public int getKey() {
-        return key;
+    public int getTagId() {
+        return tag_id;
     }
 
-    public void setKey(int key) {
-        this.key = key;
+    public void setTagId(int tag_id) {
+        this.tag_id = tag_id;
     }
 
-    public String getValue() {
-        return value;
+    public String getTagValue() {
+        return tag_value;
     }
 
-    public void setValue(String value) {
-        this.value = value;
+    public void setTagValue(String tag_value) {
+        this.tag_value = tag_value;
     }
 }
 
