@@ -10,6 +10,9 @@ import java.util.List;
 public class TagMapper {
 
     List<UserTagDTO> mapToTagDTO(UserTagsEntity entity){
+        if(entity==null){
+            return null;
+        }
         List<TagEntity> tagEntities = entity.getTagEntities();
         if(tagEntities == null){
             return null;

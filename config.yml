@@ -7,3 +7,7 @@ server:
   adminConnectors:
     - type: http
       port: 9003
+
+
+login: h2a921as%21
+password: 7as12$1as0431hjd

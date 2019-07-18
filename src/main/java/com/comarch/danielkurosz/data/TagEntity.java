@@ -2,7 +2,6 @@ package com.comarch.danielkurosz.data;
 
 
 import org.mongodb.morphia.annotations.Embedded;
-import org.mongodb.morphia.annotations.Id;
 
 @Embedded
 public class TagEntity {
@@ -10,7 +9,8 @@ public class TagEntity {
     private int tag_id;
     private String tag_value;
 
-    public TagEntity(){}
+    public TagEntity() {
+    }
 
     public int getTagId() {
         return tag_id;
@@ -28,9 +28,6 @@ public class TagEntity {
         this.tag_value = tag_value;
     }
 }
-
-
-
 
 
 //  key - value
