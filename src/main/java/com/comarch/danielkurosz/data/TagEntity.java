@@ -30,7 +30,7 @@ public class TagEntity {
 }
 
 
-//  key - value
+//  id - value
 // 0 - Admin account
 // 1 - Premium account
 // 2 - Banned account

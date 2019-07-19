@@ -4,12 +4,11 @@ import org.bson.types.ObjectId;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.mongodb.morphia.annotations.*;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
-@Entity("tags")
-@Indexes(@Index(fields = { @Field("clientId")}, options = @IndexOptions(unique = true)))
+@Entity(value = "tags", noClassnameStored = true)
+@Indexes(@Index(fields = {@Field("clientId")}, options = @IndexOptions(unique = true)))
 
 public class UserTagsEntity {
 
@@ -21,8 +20,8 @@ public class UserTagsEntity {
     private List<TagEntity> tags;
 
 
-
-    public UserTagsEntity(){}
+    public UserTagsEntity() {
+    }
 
     public UUID getClientId() {
         return clientId;

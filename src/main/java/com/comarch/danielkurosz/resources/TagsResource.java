@@ -30,7 +30,7 @@ public class TagsResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getTags(@Auth Boolean isAuthenticated,
                             @PathParam("id") String id) throws AppException {
-
+        LOGGER.info("get tags from user with id " + id);
         try {
             List<UserTagDTO> tags = tagsService.getTags(id);
             return Response.ok(tags).build();
@@ -45,8 +45,8 @@ public class TagsResource {
     @Path("/userid={id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response create(@Auth Boolean isAuthenticated,
-                           @PathParam("id") String id){
-        LOGGER.info("create User ");
+                           @PathParam("id") String id) {
+        LOGGER.info("create User with id " + id);
         try {
             tagsService.create(id);
             return Response.ok().build();

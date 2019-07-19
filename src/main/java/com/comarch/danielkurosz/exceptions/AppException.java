@@ -1,6 +1,6 @@
 package com.comarch.danielkurosz.exceptions;
 
-public class AppException extends Exception{
+public class AppException extends Exception {
     private Integer status;
 
     /**
@@ -26,7 +26,7 @@ public class AppException extends Exception{
      * @param link    link point to page where the error message is documented
      */
     AppException(int status, int code, String message,
-                        String advice, String link) {
+                 String advice, String link) {
         super(message);
         this.status = status;
         this.code = code;

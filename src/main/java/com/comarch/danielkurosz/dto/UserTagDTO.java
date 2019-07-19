@@ -5,7 +5,8 @@ public class UserTagDTO {
     private int tag_id;
     private String tag_value;
 
-    public UserTagDTO(){}
+    public UserTagDTO() {
+    }
 
     public UserTagDTO(int tag_id, String tag_value) {
         this.tag_id = tag_id;

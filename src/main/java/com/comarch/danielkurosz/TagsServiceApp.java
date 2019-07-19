@@ -4,6 +4,7 @@ package com.comarch.danielkurosz;
 import com.comarch.danielkurosz.dao.MongoDatabaseConfigurator;
 import com.comarch.danielkurosz.dao.MongoTagsDAO;
 import com.comarch.danielkurosz.exceptions.AppExceptionMapper;
+import com.comarch.danielkurosz.health.RestCheck;
 import com.comarch.danielkurosz.resources.TagsResource;
 import com.comarch.danielkurosz.service.TagMapper;
 import com.comarch.danielkurosz.service.TagsService;
@@ -29,12 +30,12 @@ public class TagsServiceApp extends Application<TagsServiceConfiguration> {
         environment.jersey().register(tagsResource);
         environment.jersey().register(new AppExceptionMapper());
 
-       environment.jersey().register(AuthFactory.binder(
-               new BasicAuthFactory<>(
-                       new TagServiceAuthenticator(configuration.getLogin(),configuration.getPassword()),
-                               "SECURITY REALM",Boolean.class)));
+        environment.jersey().register(AuthFactory.binder(
+                new BasicAuthFactory<>(
+                        new TagServiceAuthenticator(configuration.getLogin(), configuration.getPassword()),
+                        "SECURITY REALM", Boolean.class)));
 
         environment.jersey().register(new AppExceptionMapper());
-        //environment.healthChecks().register("template", new RestCheck(configuration.getVersion()));
+        environment.healthChecks().register("template", new RestCheck(configuration.getVersion()));
     }
 }

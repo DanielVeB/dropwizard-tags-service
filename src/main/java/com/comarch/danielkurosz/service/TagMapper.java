@@ -9,17 +9,17 @@ import java.util.List;
 
 public class TagMapper {
 
-    List<UserTagDTO> mapToTagDTO(UserTagsEntity entity){
-        if(entity==null){
+    List<UserTagDTO> mapToTagDTO(UserTagsEntity entity) {
+        if (entity == null) {
             return null;
         }
         List<TagEntity> tagEntities = entity.getTagEntities();
-        if(tagEntities == null){
+        if (tagEntities == null) {
             return null;
         }
         List<UserTagDTO> tagDTOs = new LinkedList<>();
-        for(TagEntity tagEntity: tagEntities){
-            tagDTOs.add(new UserTagDTO(tagEntity.getTagId(),tagEntity.getTagValue()));
+        for (TagEntity tagEntity : tagEntities) {
+            tagDTOs.add(new UserTagDTO(tagEntity.getTagId(), tagEntity.getTagValue()));
         }
         return tagDTOs;
     }
