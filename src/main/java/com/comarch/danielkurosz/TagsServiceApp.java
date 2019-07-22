@@ -1,6 +1,7 @@
 package com.comarch.danielkurosz;
 
 
+import com.comarch.danielkurosz.auth.UserAuth;
 import com.comarch.danielkurosz.dao.MongoDatabaseConfigurator;
 import com.comarch.danielkurosz.dao.MongoTagsDAO;
 import com.comarch.danielkurosz.exceptions.AppExceptionMapper;
@@ -33,7 +34,7 @@ public class TagsServiceApp extends Application<TagsServiceConfiguration> {
         environment.jersey().register(AuthFactory.binder(
                 new BasicAuthFactory<>(
                         new TagServiceAuthenticator(configuration.getLogin(), configuration.getPassword()),
-                        "SECURITY REALM", Boolean.class)));
+                        "SECURITY REALM", UserAuth.class)));
 
         environment.jersey().register(new AppExceptionMapper());
         environment.healthChecks().register("template", new RestCheck(configuration.getVersion()));
