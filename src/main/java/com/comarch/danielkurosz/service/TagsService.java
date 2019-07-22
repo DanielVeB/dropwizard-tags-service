@@ -6,6 +6,7 @@ import com.comarch.danielkurosz.dto.UserTagDTO;
 import com.comarch.danielkurosz.exceptions.AppException;
 import com.comarch.danielkurosz.exceptions.InvalidClientIdException;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,16 +21,20 @@ public class TagsService {
         this.tagMapper = tagMapper;
     }
 
-    public List<UserTagDTO> getTags(String id) throws AppException {
+    public HashMap<String, List<UserTagDTO>> getTags(List<String> clientsID){
+
+        HashMap<String, List<UserTagDTO>> tags = new HashMap<>();
 
         UserTagsEntity userTagsEntity;
-        try {
-            userTagsEntity = mongoTagsDAO.getUserTagsEntity(UUID.fromString(id));
-            return tagMapper.mapToTagDTO(userTagsEntity);
-        } catch (IndexOutOfBoundsException | IllegalArgumentException ex) {
-            throw new InvalidClientIdException();
+        for (String clientID : clientsID) {
+            try {
+                userTagsEntity = mongoTagsDAO.getUserTagsEntity(UUID.fromString(clientID));
+                tags.put(clientID, tagMapper.mapToTagDTO(userTagsEntity));
+            } catch (IndexOutOfBoundsException | IllegalArgumentException ex) {
+                // do nothing
+            }
         }
-
+        return tags;
     }
 
     public List<UserTagDTO> create(String id) throws AppException {

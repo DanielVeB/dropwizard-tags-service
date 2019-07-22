@@ -1,15 +1,17 @@
 package com.comarch.danielkurosz.resources;
 
 import com.codahale.metrics.annotation.Timed;
+import com.comarch.danielkurosz.auth.UserAuth;
 import com.comarch.danielkurosz.dto.UserTagDTO;
 import com.comarch.danielkurosz.exceptions.AppException;
-import com.comarch.danielkurosz.exceptions.InvalidClientIdException;
 import com.comarch.danielkurosz.service.TagsService;
 import io.dropwizard.auth.Auth;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -24,27 +26,29 @@ public class TagsResource {
         this.tagsService = tagsService;
     }
 
+
     @GET
     @Timed
-    @Path("/userid={id}")
+    @Path("/users/{client_ids}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getTags(@Auth Boolean isAuthenticated,
-                            @PathParam("id") String id) throws AppException {
-        LOGGER.info("get tags from user with id " + id);
-        try {
-            List<UserTagDTO> tags = tagsService.getTags(id);
-            return Response.ok(tags).build();
-        } catch (InvalidClientIdException ex) {
-            return Response.ok(null).build();
-        }
-    }
+    public Response getTags(@Auth UserAuth userAuth,
+                            @PathParam("client_ids") String clientsId) {
 
+        LOGGER.info("get tags");
+
+        clientsId = clientsId.replaceAll("[\"\\[\\]]", "");
+        List<String> listClientID = Arrays.asList(clientsId.split(","));
+
+        HashMap<String, List<UserTagDTO>> tags = tagsService.getTags(listClientID);
+
+        return Response.ok(tags).build();
+    }
 
     @POST
     @Timed
     @Path("/userid={id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response create(@Auth Boolean isAuthenticated,
+    public Response create(@Auth UserAuth userAuth,
                            @PathParam("id") String id) {
         LOGGER.info("create User with id " + id);
         try {
