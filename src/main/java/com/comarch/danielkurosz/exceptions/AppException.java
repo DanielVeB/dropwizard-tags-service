@@ -1,6 +1,7 @@
 package com.comarch.danielkurosz.exceptions;
 
 public class AppException extends Exception {
+
     private Integer status;
 
     /**
@@ -19,16 +20,15 @@ public class AppException extends Exception {
     private String advice;
 
     /**
-     * @param status  contains the same HTTP Status code returned by the server
      * @param code    application specific error code
      * @param message message describing the error
      * @param advice  extra information how can it be repaired
      * @param link    link point to page where the error message is documented
      */
-    AppException(int status, int code, String message,
+    AppException(int code, String message,
                  String advice, String link) {
         super(message);
-        this.status = status;
+        this.status = code;
         this.code = code;
         this.advice = advice;
         this.link = link;
