@@ -6,17 +6,17 @@ import org.mongodb.morphia.annotations.Embedded;
 @Embedded
 public class TagEntity {
 
-    private int tag_id;
+    private String tag_id;
     private String tag_value;
 
     public TagEntity() {
     }
 
-    public int getTagId() {
+    public String getTagId() {
         return tag_id;
     }
 
-    public void setTagId(int tag_id) {
+    public void setTagId(String tag_id) {
         this.tag_id = tag_id;
     }
 

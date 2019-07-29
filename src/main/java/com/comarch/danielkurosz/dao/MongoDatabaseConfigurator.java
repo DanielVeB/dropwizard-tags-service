@@ -7,13 +7,13 @@ import org.mongodb.morphia.Morphia;
 
 public class MongoDatabaseConfigurator {
 
-    public static MongoTagsDAO configureMongo() {
+    public static Datastore configureMongo() {
         Datastore datastore;
         Morphia morphia = new Morphia();
         morphia.map(UserTagsEntity.class);
         datastore = morphia.createDatastore(new MongoClient(), "dropwizard");
         datastore.ensureIndexes();
-        return new MongoTagsDAO(datastore);
+        return datastore;
     }
 
 
