@@ -13,20 +13,28 @@ import io.dropwizard.Application;
 import io.dropwizard.auth.AuthFactory;
 import io.dropwizard.auth.basic.BasicAuthFactory;
 import io.dropwizard.setup.Environment;
+import org.mongodb.morphia.Datastore;
+
 
 public class TagsServiceApp extends Application<TagsServiceConfiguration> {
 
     private static TagsService tagsService;
+    private Datastore datastore;
 
     public static void main(String[] args) throws Exception {
-        TagMapper tagMapper = new TagMapper();
-        MongoTagsDAO mongoTagsDAO = MongoDatabaseConfigurator.configureMongo();
-        tagsService = new TagsService(mongoTagsDAO, tagMapper);
         new TagsServiceApp().run(args);
     }
 
     @Override
     public void run(TagsServiceConfiguration configuration, Environment environment) {
+
+        TagMapper tagMapper = new TagMapper();
+
+        datastore = MongoDatabaseConfigurator.configureMongo();
+        MongoTagsDAO mongoTagsDAO = new MongoTagsDAO(datastore);
+
+        tagsService = new TagsService(mongoTagsDAO, tagMapper);
+
         final TagsResource tagsResource = new TagsResource(tagsService);
         environment.jersey().register(tagsResource);
         environment.jersey().register(new AppExceptionMapper());
@@ -38,5 +46,7 @@ public class TagsServiceApp extends Application<TagsServiceConfiguration> {
 
         environment.jersey().register(new AppExceptionMapper());
         environment.healthChecks().register("template", new RestCheck(configuration.getVersion()));
+
     }
+
 }

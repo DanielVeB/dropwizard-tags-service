@@ -52,4 +52,15 @@ public class TagsResource {
             return Response.ok(null).build();
         }
     }
+
+    @PUT
+    @Path("/client={client_id}")
+    @Timed
+    public void addZodiac(@Auth UserAuth userAuth,@PathParam("client_id")String clientId, UserTagDTO userTagDTO){
+
+        LOGGER.info("add Zodiac to client with id "+ clientId);
+        System.out.println(userTagDTO.getTag_id());
+        tagsService.withoutzodiac();
+    }
+
 }

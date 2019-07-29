@@ -32,6 +32,7 @@ public class TagsService {
         UserTagsEntity userTagsEntity;
         for (String clientID : clientsID) {
             try {
+
                 userTagsEntity = mongoTagsDAO.getUserTagsEntity(UUID.fromString(clientID));
                 tags.put(clientID, tagMapper.mapToTagDTO(userTagsEntity));
             } catch (IndexOutOfBoundsException | IllegalArgumentException ex) {
@@ -49,13 +50,19 @@ public class TagsService {
             throw new InvalidClientIdException();
         }
         UserTagsEntity entity = new UserTagsEntity();
+
         entity.setClientId(uuid);
         try {
             mongoTagsDAO.create(entity);
         } catch (DuplicateKeyException ex) {
             throw new DuplicateIdException();
         }
+
         return tagMapper.mapToTagDTO(entity);
+    }
+
+    public void withoutzodiac(){
+        mongoTagsDAO.getClientsWithoutZodiacSign();
     }
 
 }
