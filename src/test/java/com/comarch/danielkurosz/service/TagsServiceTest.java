@@ -1,8 +1,8 @@
 package com.comarch.danielkurosz.service;
 
 import com.comarch.danielkurosz.dao.MongoTagsDAO;
-import com.comarch.danielkurosz.data.UserTagsEntity;
-import com.comarch.danielkurosz.dto.UserTagDTO;
+import com.comarch.danielkurosz.data.ClientTagsEntity;
+import com.comarch.danielkurosz.dto.Tag;
 import com.comarch.danielkurosz.exceptions.AppException;
 import com.comarch.danielkurosz.exceptions.DuplicateIdException;
 import com.comarch.danielkurosz.exceptions.InvalidClientIdException;
@@ -40,7 +40,7 @@ public class TagsServiceTest {
 
     @Test
     public void getTags_ShouldCallTagMapperOnce() {
-        UserTagsEntity entity = new UserTagsEntity();
+        ClientTagsEntity entity = new ClientTagsEntity();
         when(mongoTagsDAO.getUserTagsEntity(any())).thenReturn(entity);
         List<String> clientsID = new LinkedList<>();
         clientsID.add(UUID.randomUUID().toString());
@@ -50,7 +50,7 @@ public class TagsServiceTest {
 
     @Test
     public void getTags_WhenNullIsPassed_ThenReturnEmptyHashMap() {
-        HashMap<String, List<UserTagDTO>> result = testObject.getTags(null);
+        HashMap<String, List<Tag>> result = testObject.getTags(null);
         Assert.assertEquals("hashMap should be empty", 0, result.size());
     }
 
@@ -73,9 +73,9 @@ public class TagsServiceTest {
 
     @Test
     public void getTags_WhenOneUUIDIsCorrectButSecondIsInvalid_ThenReturnHashMapWithOneValue() {
-        HashMap<String, List<UserTagDTO>> userTags;
-        UserTagsEntity userTagsEntity = new UserTagsEntity();
-        List<UserTagDTO> tagDTOS = new LinkedList<>();
+        HashMap<String, List<Tag>> userTags;
+        ClientTagsEntity userTagsEntity = new ClientTagsEntity();
+        List<Tag> tagDTOS = new LinkedList<>();
         List<String> clientsID = new LinkedList<>();
         clientsID.add("invalid uuid");
         clientsID.add(UUID.randomUUID().toString());
@@ -109,7 +109,7 @@ public class TagsServiceTest {
     public void create_WhenMongoReturnNothing_ThenCallTagMapper() throws AppException {
         when(mongoTagsDAO.create(any())).thenReturn(null);
         testObject.create(UUID.randomUUID().toString());
-        UserTagsEntity entity = new UserTagsEntity();
+        ClientTagsEntity entity = new ClientTagsEntity();
         verify(tagMapper, times(1)).mapToTagDTO(any());
     }
 }

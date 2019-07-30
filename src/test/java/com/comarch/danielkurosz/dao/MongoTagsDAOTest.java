@@ -1,7 +1,7 @@
 package com.comarch.danielkurosz.dao;
 
-import com.comarch.danielkurosz.data.TagEntity;
-import com.comarch.danielkurosz.data.UserTagsEntity;
+import com.comarch.danielkurosz.data.ClientTagsEntity;
+import com.comarch.danielkurosz.dto.Tag;
 import com.github.fakemongo.Fongo;
 import org.junit.Assert;
 import org.junit.Before;
@@ -28,15 +28,15 @@ public class MongoTagsDAOTest {
         mongoTagsDAO = new MongoTagsDAO(datastore);
     }
 
-    private UserTagsEntity createEntity(UUID id) {
-        UserTagsEntity entity = new UserTagsEntity();
+    private ClientTagsEntity createEntity(UUID id) {
+        ClientTagsEntity entity = new ClientTagsEntity();
         entity.setClientId(id);
-        TagEntity tagEntity = new TagEntity();
-        tagEntity.setTagValue("");
-        tagEntity.setTagId(1);
-        List<TagEntity> tags = new LinkedList<>();
+        Tag tagEntity = new Tag();
+        tagEntity.setTag_value("");
+        tagEntity.setTag_id("id");
+        List<Tag> tags = new LinkedList<>();
         tags.add(tagEntity);
-        entity.setTagEntities(tags);
+        entity.setTags(tags);
         return entity;
     }
 
@@ -46,25 +46,25 @@ public class MongoTagsDAOTest {
 
     @Test
     public void getUserTagsEntity_WhenClientWithThisIdExists_ThenReturnUserTagsEntity() {
-        UserTagsEntity returnEntity = mongoTagsDAO.getUserTagsEntity(UUID.fromString("62fba7eb-eef8-44c1-8d33-f1499cd6145e"));
+        ClientTagsEntity returnEntity = mongoTagsDAO.getUserTagsEntity(UUID.fromString("62fba7eb-eef8-44c1-8d33-f1499cd6145e"));
         Assert.assertNotNull(returnEntity);
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void getUserTagsEntity_WhenClientWithThisIdDoesNotExist_ThenThrowIndexOutOfBoundException() {
-        UserTagsEntity returnEntity = mongoTagsDAO.getUserTagsEntity(UUID.fromString("62daa7eb-eef8-44c1-8d33-f1499cd6145e"));
+        ClientTagsEntity returnEntity = mongoTagsDAO.getUserTagsEntity(UUID.fromString("62daa7eb-eef8-44c1-8d33-f1499cd6145e"));
         Assert.assertNotNull(returnEntity);
     }
 
     @Test(expected = NumberFormatException.class)
     public void getUserTagsEntity_WhenIdIsInvalid_ThenThrowIndexOutOfBoundException() {
-        UserTagsEntity returnEntity = mongoTagsDAO.getUserTagsEntity(UUID.fromString("62zzzzzz-eef8-44c1-8d33-f1499cd6145e"));
+        ClientTagsEntity returnEntity = mongoTagsDAO.getUserTagsEntity(UUID.fromString("62zzzzzz-eef8-44c1-8d33-f1499cd6145e"));
         Assert.assertNotNull(returnEntity);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void getUserTagsEntity_WhenIdIsInvalidStringTooLarge_ThenThrowIllegalArgumentException() {
-        UserTagsEntity returnEntity = mongoTagsDAO.getUserTagsEntity(UUID.fromString("1111111111111111111111111111111111111111111111111111111111"));
+        ClientTagsEntity returnEntity = mongoTagsDAO.getUserTagsEntity(UUID.fromString("1111111111111111111111111111111111111111111111111111111111"));
         Assert.assertNotNull(returnEntity);
     }
 }

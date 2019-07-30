@@ -1,8 +1,7 @@
 package com.comarch.danielkurosz.service;
 
-import com.comarch.danielkurosz.data.TagEntity;
-import com.comarch.danielkurosz.data.UserTagsEntity;
-import com.comarch.danielkurosz.dto.UserTagDTO;
+import com.comarch.danielkurosz.data.ClientTagsEntity;
+import com.comarch.danielkurosz.dto.Tag;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,19 +25,19 @@ public class TagMapperTest {
 
     @Test
     public void mapToTagDTO_WhenEntityHasNotTags_ThenReturnNull() {
-        UserTagsEntity userTagsEntity = new UserTagsEntity();
+        ClientTagsEntity userTagsEntity = new ClientTagsEntity();
         Assert.assertNull(tagMapper.mapToTagDTO(userTagsEntity));
     }
 
     @Test
     public void mapToTagDTO_WhenEntityHasTags_ThenReturnListOfTagsDTO() {
-        UserTagsEntity userTagsEntity = new UserTagsEntity();
+        ClientTagsEntity userTagsEntity = new ClientTagsEntity();
         List<TagEntity> tagEntities = new LinkedList<>();
         tagEntities.add(new TagEntity());
 
         userTagsEntity.setTagEntities(tagEntities);
 
-        List<UserTagDTO> tagDTOS = tagMapper.mapToTagDTO(userTagsEntity);
+        List<Tag> tagDTOS = tagMapper.mapToTagDTO(userTagsEntity);
         Assert.assertNotEquals("list should have size at least 1", 0, tagDTOS.size());
     }
 

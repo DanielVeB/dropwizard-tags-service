@@ -1,7 +1,7 @@
 package com.comarch.danielkurosz.resources;
 
 import com.comarch.danielkurosz.auth.UserAuth;
-import com.comarch.danielkurosz.dto.UserTagDTO;
+import com.comarch.danielkurosz.dto.Tag;
 import com.comarch.danielkurosz.exceptions.AppException;
 import com.comarch.danielkurosz.service.TagsService;
 import org.junit.Assert;
@@ -37,7 +37,7 @@ public class TagsResourceTest {
 
     @Test
     public void getTags_WhenTagsServiceReturnEmptyHashMap_ThenReturnEmptyHashMap() {
-        HashMap<String, List<UserTagDTO>> hashMap = new HashMap<>();
+        HashMap<String, List<Tag>> hashMap = new HashMap<>();
         when(tagsService.getTags(anyList())).thenReturn(hashMap);
 
         Response response = testObject.getTags(new UserAuth(""), new LinkedList<>());
@@ -47,8 +47,8 @@ public class TagsResourceTest {
 
     @Test
     public void getTags_WhenTagsServiceReturnHashMapWithTags_ThenReturnResponseWithHashMap() {
-        HashMap<String, List<UserTagDTO>> hashMap = new HashMap<>();
-        List<UserTagDTO> tags = new LinkedList<>();
+        HashMap<String, List<Tag>> hashMap = new HashMap<>();
+        List<Tag> tags = new LinkedList<>();
         hashMap.put("new id", tags);
 
         when(tagsService.getTags(anyList())).thenReturn(hashMap);
@@ -58,7 +58,7 @@ public class TagsResourceTest {
 
     @Test
     public void getTags_WheNullIsPassed_ThenReturnEmptyHashMap(){
-        HashMap<String, List<UserTagDTO>> result = new HashMap<>();
+        HashMap<String, List<Tag>> result = new HashMap<>();
         when(tagsService.getTags(null)).thenReturn(result);
         Response response = testObject.getTags(new UserAuth(""),null);
         Assert.assertEquals("result hash map should be empty", result, response.getEntity());
@@ -81,8 +81,8 @@ public class TagsResourceTest {
 
     @Test
     public void create_WhenTagsServiceReturnListOfUserTags_ThenReturnResponseWithTags() throws AppException{
-        List<UserTagDTO> userTags = new LinkedList<>();
-        userTags.add(new UserTagDTO(1,"Premium account"));
+        List<Tag> userTags = new LinkedList<>();
+        userTags.add(new Tag(1,"Premium account"));
 
         when(tagsService.create(any())).thenReturn(userTags);
         Response response = testObject.create(new UserAuth(""),UUID.randomUUID().toString());
