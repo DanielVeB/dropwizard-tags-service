@@ -2,7 +2,7 @@ package com.comarch.danielkurosz.resources;
 
 import com.codahale.metrics.annotation.Timed;
 import com.comarch.danielkurosz.auth.UserAuth;
-import com.comarch.danielkurosz.dto.UserTagDTO;
+import com.comarch.danielkurosz.dto.ClientTagDTO;
 import com.comarch.danielkurosz.exceptions.AppException;
 import com.comarch.danielkurosz.service.TagsService;
 import io.dropwizard.auth.Auth;
@@ -10,7 +10,6 @@ import io.dropwizard.auth.Auth;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -34,9 +33,24 @@ public class TagsResource {
                             @QueryParam("client_id") List<String> clientsId) {
 
         LOGGER.info("get tags");
-        HashMap<String, List<UserTagDTO>> tags = tagsService.getTags(clientsId);
-        return Response.ok(tags).build();
+        List<ClientTagDTO> clientTagDTOs= tagsService.getTags(clientsId);
+        return Response.ok(clientTagDTOs).build();
     }
+
+    @GET
+    @Timed
+    @Path("/clients/id")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getClientIdsByTags(@Auth UserAuth userAuth,
+                                       @QueryParam("tag_id!")List<String> notExistTagsId,
+                                       @QueryParam("tag_id") List<String> tagsId){
+
+        LOGGER.info("Get clients id without tags: " + notExistTagsId +" or/and with tags "+ tagsId);
+
+        List<String> clientsId = tagsService.getClientsId(notExistTagsId,tagsId);
+        return Response.ok(clientsId).build();
+    }
+
 
     @POST
     @Timed
@@ -44,23 +58,27 @@ public class TagsResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response create(@Auth UserAuth userAuth,
                            @PathParam("client_id") String clientID) {
+
         LOGGER.info("create User with id " + clientID);
+
         try {
-            List<UserTagDTO> tags = tagsService.create(clientID);
-            return Response.ok(tags).build();
+            ClientTagDTO client =tagsService.create(clientID);
+            return Response.ok(client).build();
         } catch (AppException e) {
             return Response.ok(null).build();
         }
     }
 
     @PUT
-    @Path("/client={client_id}")
+    @Path("/client")
     @Timed
-    public void addZodiac(@Auth UserAuth userAuth,@PathParam("client_id")String clientId, UserTagDTO userTagDTO){
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public void addZodiac(@Auth UserAuth userAuth, ClientTagDTO clientTagDTO){
 
-        LOGGER.info("add Zodiac to client with id "+ clientId);
-        System.out.println(userTagDTO.getTag_id());
-        tagsService.withoutzodiac();
+        LOGGER.info("update tags for client with id: "+ clientTagDTO.getClientId());
+        tagsService.update(clientTagDTO);
+
     }
 
 }

@@ -1,26 +1,19 @@
 package com.comarch.danielkurosz.service;
 
-import com.comarch.danielkurosz.data.TagEntity;
-import com.comarch.danielkurosz.data.UserTagsEntity;
-import com.comarch.danielkurosz.dto.UserTagDTO;
+import com.comarch.danielkurosz.data.ClientTagsEntity;
+import com.comarch.danielkurosz.dto.ClientTagDTO;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.UUID;
 
 public class TagMapper {
 
-    List<UserTagDTO> mapToTagDTO(UserTagsEntity entity) {
-        if (entity == null) {
-            return null;
-        }
-        List<TagEntity> tagEntities = entity.getTagEntities();
-        if (tagEntities == null) {
-            return null;
-        }
-        List<UserTagDTO> tagDTOs = new LinkedList<>();
-        for (TagEntity tagEntity : tagEntities) {
-            tagDTOs.add(new UserTagDTO(tagEntity.getTagId(), tagEntity.getTagValue()));
-        }
-        return tagDTOs;
+    ClientTagDTO mapToClientTagDTO(ClientTagsEntity entity) {
+
+        return new ClientTagDTO(entity.getClientId().toString(), entity.getTags());
     }
+    ClientTagsEntity mapToClientTagEntity(ClientTagDTO dto){
+
+        return new ClientTagsEntity(UUID.fromString(dto.getClientId()),dto.getTags());
+    }
+
 }

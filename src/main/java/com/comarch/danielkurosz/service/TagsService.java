@@ -1,14 +1,15 @@
 package com.comarch.danielkurosz.service;
 
 import com.comarch.danielkurosz.dao.MongoTagsDAO;
-import com.comarch.danielkurosz.data.UserTagsEntity;
-import com.comarch.danielkurosz.dto.UserTagDTO;
+import com.comarch.danielkurosz.data.ClientTagsEntity;
+import com.comarch.danielkurosz.dto.ClientTagDTO;
 import com.comarch.danielkurosz.exceptions.AppException;
 import com.comarch.danielkurosz.exceptions.DuplicateIdException;
 import com.comarch.danielkurosz.exceptions.InvalidClientIdException;
 import com.mongodb.DuplicateKeyException;
 
-import java.util.HashMap;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
@@ -23,33 +24,28 @@ public class TagsService {
         this.tagMapper = tagMapper;
     }
 
-    public HashMap<String, List<UserTagDTO>> getTags(List<String> clientsID) {
-        HashMap<String, List<UserTagDTO>> tags = new HashMap<>();
-        if (clientsID == null) {
-            return tags;
-        }
-
-        UserTagsEntity userTagsEntity;
-        for (String clientID : clientsID) {
+    public List<ClientTagDTO> getTags(List<String> clientsID) {
+        List<ClientTagDTO> clientTags = new LinkedList<>();
+        ClientTagsEntity userTagsEntity;
+        for (String clientID : safe(clientsID)) {
             try {
-
                 userTagsEntity = mongoTagsDAO.getUserTagsEntity(UUID.fromString(clientID));
-                tags.put(clientID, tagMapper.mapToTagDTO(userTagsEntity));
+                clientTags.add(tagMapper.mapToClientTagDTO(userTagsEntity));
             } catch (IndexOutOfBoundsException | IllegalArgumentException ex) {
                 // ignore this id
             }
         }
-        return tags;
+        return clientTags;
     }
 
-    public List<UserTagDTO> create(String id) throws AppException {
+    public ClientTagDTO create(String id) throws AppException {
         UUID uuid;
         try {
             uuid = UUID.fromString(id);
         } catch (IllegalArgumentException | NullPointerException ex) {
             throw new InvalidClientIdException();
         }
-        UserTagsEntity entity = new UserTagsEntity();
+        ClientTagsEntity entity = new ClientTagsEntity();
 
         entity.setClientId(uuid);
         try {
@@ -58,11 +54,26 @@ public class TagsService {
             throw new DuplicateIdException();
         }
 
-        return tagMapper.mapToTagDTO(entity);
+        return tagMapper.mapToClientTagDTO(entity);
     }
 
-    public void withoutzodiac(){
-        mongoTagsDAO.getClientsWithoutZodiacSign();
+
+    public List<String> getClientsId(List<String> withoutTags, List<String> withTags) {
+        List<UUID> uuids = mongoTagsDAO.getClientsId(withoutTags, withTags);
+        List<String> ids = new LinkedList<>();
+        for (UUID uuid : uuids) {
+            ids.add(uuid.toString());
+        }
+        return ids;
     }
+
+    public void update(ClientTagDTO clientTagDTO) {
+        mongoTagsDAO.update(tagMapper.mapToClientTagEntity(clientTagDTO));
+    }
+
+    private static<T> List<T> safe(List<T> other) {
+        return other == null ? Collections.EMPTY_LIST : other;
+    }
+
 
 }
