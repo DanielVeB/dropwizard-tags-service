@@ -1,14 +1,15 @@
 package com.comarch.danielkurosz.dto;
 
-public class UserTagDTO {
+
+public class Tag {
 
     private String tag_id;
     private String tag_value;
 
-    public UserTagDTO() {
+    public Tag() {
     }
 
-    public UserTagDTO(String tag_id, String tag_value) {
+    public Tag(String tag_id, String tag_value) {
         this.tag_id = tag_id;
         this.tag_value = tag_value;
     }

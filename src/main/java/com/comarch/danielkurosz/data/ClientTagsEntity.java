@@ -1,5 +1,6 @@
 package com.comarch.danielkurosz.data;
 
+import com.comarch.danielkurosz.dto.Tag;
 import org.bson.types.ObjectId;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.mongodb.morphia.annotations.*;
@@ -10,17 +11,22 @@ import java.util.UUID;
 @Entity(value = "tags", noClassnameStored = true)
 @Indexes(@Index(fields = {@Field("clientId")}, options = @IndexOptions(unique = true)))
 
-public class UserTagsEntity {
+public class ClientTagsEntity {
 
     @Id
     private ObjectId id;
     private UUID clientId;
     @Embedded
     @NotEmpty
-    private List<TagEntity> tags;
+    private List<Tag> tags;
 
 
-    public UserTagsEntity() {
+    public ClientTagsEntity() {
+    }
+
+    public ClientTagsEntity(UUID clientId, List<Tag> tags) {
+        this.clientId = clientId;
+        this.tags = tags;
     }
 
     public UUID getClientId() {
@@ -31,11 +37,11 @@ public class UserTagsEntity {
         this.clientId = clientId;
     }
 
-    public List<TagEntity> getTagEntities() {
+    public List<Tag> getTags() {
         return tags;
     }
 
-    public void setTagEntities(List<TagEntity> tagEntities) {
+    public void setTags(List<Tag> tagEntities) {
         this.tags = tagEntities;
 
     }
