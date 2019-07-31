@@ -1,5 +1,7 @@
 package com.comarch.danielkurosz.dto;
 
+import com.comarch.danielkurosz.data.Tag;
+
 import java.util.List;
 
 public class ClientTagDTO {

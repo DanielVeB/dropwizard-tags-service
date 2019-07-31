@@ -1,7 +1,7 @@
 package com.comarch.danielkurosz.dao;
 
 import com.comarch.danielkurosz.data.ClientTagsEntity;
-import com.comarch.danielkurosz.dto.Tag;
+import com.comarch.danielkurosz.data.Tag;
 import com.mongodb.DuplicateKeyException;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.query.Query;
@@ -22,55 +22,49 @@ public class MongoTagsDAO {
 
 
 
-    public ClientTagsEntity getUserTagsEntity(UUID userid) throws IndexOutOfBoundsException {
+    public List<Tag> getUserTagsEntity(UUID userid) throws IndexOutOfBoundsException {
 
         Query<ClientTagsEntity> query = this.datastore.createQuery(ClientTagsEntity.class);
 
         query.field("clientId").equal(userid);
-        return query.asList().get(0);
+        List<ClientTagsEntity> resultClients =  query.asList();
+        List<Tag> tags = new LinkedList<>();
+        for(ClientTagsEntity clientTagsEntity : resultClients){
+            tags.add(clientTagsEntity.getTag());
+        }
+        return tags;
+    }
+
+    public List<UUID> getClientsId(List<String> withoutTags, List<String> withTags){
+        Query<ClientTagsEntity> query = this.datastore.createQuery(ClientTagsEntity.class);
+
+        //searching documents without passed tag_id
+        for(String withoutTag : withoutTags){
+            query = applyToQuery(query,"tags.tag_id",withoutTag,false);
+        }
+        // now searching documents with tag_id
+        for (String withTag : withTags){
+            query = applyToQuery(query,"tags.tag_id",withTag,true);
+        }
+
+        List<ClientTagsEntity> list = query.asList();
+        List<UUID> uuids = new LinkedList<>();
+        for(ClientTagsEntity entity : list){
+            uuids.add(entity.getClientId());
+        }
+        return uuids;
 
     }
 
-        public List<UUID> getClientsId(List<String> withoutTags, List<String> withTags){
-            Query<ClientTagsEntity> query = this.datastore.createQuery(ClientTagsEntity.class);
 
-            //searching documents without passed tag_id
-            for(String withoutTag : withoutTags){
-                query = applyToQuery(query,"tags.tag_id",withoutTag,false);
-            }
-            // now searching documents with tag_id
-            for (String withTag : withTags){
-                query = applyToQuery(query,"tags.tag_id",withTag,true);
-            }
+    public ClientTagsEntity create(ClientTagsEntity clientTagsEntity) throws DuplicateKeyException {
+        datastore.save(clientTagsEntity);
 
-            List<ClientTagsEntity> list = query.asList();
-            List<UUID> uuids = new LinkedList<>();
-            for(ClientTagsEntity entity : list){
-                uuids.add(entity.getClientId());
-            }
-            return uuids;
-
-        }
-
-
-
-
-    public ClientTagsEntity create(ClientTagsEntity userTagsEntity) throws DuplicateKeyException {
-        datastore.save(userTagsEntity);
-
-        return userTagsEntity;
+        return clientTagsEntity;
     }
 
     public void update(ClientTagsEntity userTagsEntity){
 
-        Query<ClientTagsEntity> query = datastore.createQuery(ClientTagsEntity.class).field("clientId").equal(userTagsEntity.getClientId());
-
-        UpdateOperations<ClientTagsEntity> update = datastore.createUpdateOperations(ClientTagsEntity.class);
-
-        for(Tag tag : userTagsEntity.getTags()){
-            update = pushTag(update,tag);
-        }
-        datastore.update(query,update);
 
     }
 
@@ -87,5 +81,7 @@ public class MongoTagsDAO {
             return query.field(fieldName).notEqual(fieldValue);
         }
     }
+
+
 
 }

@@ -2,6 +2,7 @@ package com.comarch.danielkurosz.service;
 
 import com.comarch.danielkurosz.dao.MongoTagsDAO;
 import com.comarch.danielkurosz.data.ClientTagsEntity;
+import com.comarch.danielkurosz.data.Tag;
 import com.comarch.danielkurosz.dto.ClientTagDTO;
 import com.comarch.danielkurosz.exceptions.AppException;
 import com.comarch.danielkurosz.exceptions.DuplicateIdException;
@@ -29,8 +30,8 @@ public class TagsService {
         ClientTagsEntity userTagsEntity;
         for (String clientID : safe(clientsID)) {
             try {
-                userTagsEntity = mongoTagsDAO.getUserTagsEntity(UUID.fromString(clientID));
-                clientTags.add(tagMapper.mapToClientTagDTO(userTagsEntity));
+                List<Tag> tags = mongoTagsDAO.getUserTagsEntity(UUID.fromString(clientID));
+                clientTags.add(new ClientTagDTO(clientID,tags));
             } catch (IndexOutOfBoundsException | IllegalArgumentException ex) {
                 // ignore this id
             }
@@ -38,23 +39,25 @@ public class TagsService {
         return clientTags;
     }
 
-    public ClientTagDTO create(String id) throws AppException {
+    public void create(ClientTagDTO clientTagDTO) throws AppException {
         UUID uuid;
         try {
-            uuid = UUID.fromString(id);
+            uuid = UUID.fromString(clientTagDTO.getClientId());
         } catch (IllegalArgumentException | NullPointerException ex) {
             throw new InvalidClientIdException();
         }
-        ClientTagsEntity entity = new ClientTagsEntity();
 
-        entity.setClientId(uuid);
-        try {
-            mongoTagsDAO.create(entity);
-        } catch (DuplicateKeyException ex) {
-            throw new DuplicateIdException();
+        for (Tag tag : clientTagDTO.getTags()) {
+            System.out.println(tag.getTag_id());
+            try {
+                mongoTagsDAO.create(new ClientTagsEntity(uuid, tag));
+            }catch (DuplicateKeyException ex){
+                System.out.println("blad" + tag.getTag_id());
+                // ignore this
+            }
         }
 
-        return tagMapper.mapToClientTagDTO(entity);
+
     }
 
 
@@ -68,7 +71,7 @@ public class TagsService {
     }
 
     public void update(ClientTagDTO clientTagDTO) {
-        mongoTagsDAO.update(tagMapper.mapToClientTagEntity(clientTagDTO));
+       // mongoTagsDAO.update(tagMapper.mapToClientTagEntity(clientTagDTO));
     }
 
     private static<T> List<T> safe(List<T> other) {

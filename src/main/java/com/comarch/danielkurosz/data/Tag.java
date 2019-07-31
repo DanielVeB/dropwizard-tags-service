@@ -1,7 +1,8 @@
-package com.comarch.danielkurosz.dto;
+package com.comarch.danielkurosz.data;
 
 
 public class Tag {
+
 
     private String tag_id;
     private String tag_value;

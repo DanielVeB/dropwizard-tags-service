@@ -7,13 +7,13 @@ import java.util.UUID;
 
 public class TagMapper {
 
-    ClientTagDTO mapToClientTagDTO(ClientTagsEntity entity) {
-
-        return new ClientTagDTO(entity.getClientId().toString(), entity.getTags());
-    }
-    ClientTagsEntity mapToClientTagEntity(ClientTagDTO dto){
-
-        return new ClientTagsEntity(UUID.fromString(dto.getClientId()),dto.getTags());
-    }
+//    ClientTagDTO mapToClientTagDTO(ClientTagsEntity entity) {
+//
+//        return new ClientTagDTO(entity.getClientId().toString(), entity.getTag());
+//    }
+//    ClientTagsEntity mapToClientTagEntity(ClientTagDTO dto){
+//
+//        return new ClientTagsEntity(UUID.fromString(dto.getClientId()),dto.getTags());
+//    }
 
 }

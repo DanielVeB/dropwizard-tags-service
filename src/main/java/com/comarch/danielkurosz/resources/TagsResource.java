@@ -54,19 +54,14 @@ public class TagsResource {
 
     @POST
     @Timed
-    @Path("/client={client_id}")
+    @Path("/client")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response create(@Auth UserAuth userAuth,
-                           @PathParam("client_id") String clientID) {
+    public void create(@Auth UserAuth userAuth,
+                           ClientTagDTO clientTagDTO) throws AppException {
 
-        LOGGER.info("create User with id " + clientID);
+        LOGGER.info("create User with id " + clientTagDTO.getClientId());
+        tagsService.create(clientTagDTO);
 
-        try {
-            ClientTagDTO client =tagsService.create(clientID);
-            return Response.ok(client).build();
-        } catch (AppException e) {
-            return Response.ok(null).build();
-        }
     }
 
     @PUT
