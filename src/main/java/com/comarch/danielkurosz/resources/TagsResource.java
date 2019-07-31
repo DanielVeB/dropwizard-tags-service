@@ -2,11 +2,13 @@ package com.comarch.danielkurosz.resources;
 
 import com.codahale.metrics.annotation.Timed;
 import com.comarch.danielkurosz.auth.UserAuth;
+import com.comarch.danielkurosz.data.Tag;
 import com.comarch.danielkurosz.dto.ClientTagDTO;
 import com.comarch.danielkurosz.exceptions.AppException;
 import com.comarch.danielkurosz.service.TagsService;
 import io.dropwizard.auth.Auth;
 
+import javax.validation.constraints.Min;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -33,8 +35,9 @@ public class TagsResource {
                             @QueryParam("client_id") List<String> clientsId) {
 
         LOGGER.info("get tags");
-        List<ClientTagDTO> clientTagDTOs= tagsService.getTags(clientsId);
-        return Response.ok(clientTagDTOs).build();
+//        List<ClientTagDTO> clientTagDTOs= tagsService.getTags(clientsId);
+//        return Response.ok(clientTagDTOs).build();
+        return null;
     }
 
     @GET
@@ -50,6 +53,21 @@ public class TagsResource {
         List<String> clientsId = tagsService.getClientsId(notExistTagsId,tagsId);
         return Response.ok(clientsId).build();
     }
+
+    @GET
+    @Timed
+    @Path("client={id}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getTagsByClientId(@Auth UserAuth userAuth,
+                                      @PathParam("id") String clientId,
+                                      @QueryParam("limit")@Min(0)@DefaultValue("10")int limit,
+                                      @QueryParam("offset")@Min(0)@DefaultValue("0")int offset){
+        List<Tag> tags = tagsService.getTagsByClientId(clientId,limit,offset);
+        return Response.ok(tags).build();
+    }
+
+
 
 
     @POST

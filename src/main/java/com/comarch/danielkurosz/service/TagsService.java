@@ -25,18 +25,22 @@ public class TagsService {
         this.tagMapper = tagMapper;
     }
 
-    public List<ClientTagDTO> getTags(List<String> clientsID) {
-        List<ClientTagDTO> clientTags = new LinkedList<>();
-        ClientTagsEntity userTagsEntity;
-        for (String clientID : safe(clientsID)) {
-            try {
-                List<Tag> tags = mongoTagsDAO.getUserTagsEntity(UUID.fromString(clientID));
-                clientTags.add(new ClientTagDTO(clientID,tags));
-            } catch (IndexOutOfBoundsException | IllegalArgumentException ex) {
-                // ignore this id
-            }
-        }
-        return clientTags;
+//    public List<ClientTagDTO> getTags(List<String> clientsID) {
+//        List<ClientTagDTO> clientTags = new LinkedList<>();
+//        ClientTagsEntity userTagsEntity;
+//        for (String clientID : safe(clientsID)) {
+//            try {
+//                List<Tag> tags = mongoTagsDAO.getUserTagsEntity(UUID.fromString(clientID));
+//                clientTags.add(new ClientTagDTO(clientID,tags));
+//            } catch (IndexOutOfBoundsException | IllegalArgumentException ex) {
+//                // ignore this id
+//            }
+//        }
+//        return clientTags;
+//    }
+
+    public List<Tag> getTagsByClientId(String clientId, int limit, int offset){
+        return mongoTagsDAO.getTagsByClientID(UUID.fromString(clientId),limit,offset);
     }
 
     public void create(ClientTagDTO clientTagDTO) throws AppException {
