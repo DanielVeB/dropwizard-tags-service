@@ -1,7 +1,7 @@
 package com.comarch.danielkurosz.resources;
 
 import com.comarch.danielkurosz.auth.UserAuth;
-import com.comarch.danielkurosz.dto.Tag;
+import com.comarch.danielkurosz.data.Tag;
 import com.comarch.danielkurosz.exceptions.AppException;
 import com.comarch.danielkurosz.service.TagsService;
 import org.junit.Assert;
@@ -35,35 +35,10 @@ public class TagsResourceTest {
     }
 
 
-    @Test
-    public void getTags_WhenTagsServiceReturnEmptyHashMap_ThenReturnEmptyHashMap() {
-        HashMap<String, List<Tag>> hashMap = new HashMap<>();
-        when(tagsService.getTags(anyList())).thenReturn(hashMap);
 
-        Response response = testObject.getTags(new UserAuth(""), new LinkedList<>());
-        Assert.assertEquals("result hash map should be empty", hashMap, response.getEntity());
 
-    }
 
-    @Test
-    public void getTags_WhenTagsServiceReturnHashMapWithTags_ThenReturnResponseWithHashMap() {
-        HashMap<String, List<Tag>> hashMap = new HashMap<>();
-        List<Tag> tags = new LinkedList<>();
-        hashMap.put("new id", tags);
 
-        when(tagsService.getTags(anyList())).thenReturn(hashMap);
-        Response response = testObject.getTags(new UserAuth(""), new LinkedList<>());
-        Assert.assertEquals("result hashMap should have one field", hashMap, response.getEntity());
-    }
-
-    @Test
-    public void getTags_WheNullIsPassed_ThenReturnEmptyHashMap(){
-        HashMap<String, List<Tag>> result = new HashMap<>();
-        when(tagsService.getTags(null)).thenReturn(result);
-        Response response = testObject.getTags(new UserAuth(""),null);
-        Assert.assertEquals("result hash map should be empty", result, response.getEntity());
-
-    }
 
     @Test
     public void create_WhenNullIdIsPassed_ThenReturnResponseWithNullEntity() throws AppException {
@@ -79,14 +54,6 @@ public class TagsResourceTest {
         Assert.assertNull("Response should have null entity", response.getEntity());
     }
 
-    @Test
-    public void create_WhenTagsServiceReturnListOfUserTags_ThenReturnResponseWithTags() throws AppException{
-        List<Tag> userTags = new LinkedList<>();
-        userTags.add(new Tag(1,"Premium account"));
 
-        when(tagsService.create(any())).thenReturn(userTags);
-        Response response = testObject.create(new UserAuth(""),UUID.randomUUID().toString());
-        Assert.assertEquals(userTags,response.getEntity());
-    }
 
 }
