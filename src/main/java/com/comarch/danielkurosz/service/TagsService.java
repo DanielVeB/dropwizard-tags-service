@@ -1,11 +1,12 @@
 package com.comarch.danielkurosz.service;
 
 import com.comarch.danielkurosz.dao.MongoTagsDAO;
-import com.comarch.danielkurosz.data.ClientTagsEntity;
+import com.comarch.danielkurosz.data.ClientTagEntity;
 import com.comarch.danielkurosz.data.Tag;
 import com.comarch.danielkurosz.dto.ClientTagDTO;
+import com.comarch.danielkurosz.dto.ClientTagsDTO;
+import com.comarch.danielkurosz.dto.Statistic;
 import com.comarch.danielkurosz.exceptions.AppException;
-import com.comarch.danielkurosz.exceptions.DuplicateIdException;
 import com.comarch.danielkurosz.exceptions.InvalidClientIdException;
 import com.mongodb.DuplicateKeyException;
 
@@ -18,32 +19,35 @@ public class TagsService {
 
     private MongoTagsDAO mongoTagsDAO;
 
-    private TagMapper tagMapper;
+    private Mapper tagMapper;
 
-    public TagsService(MongoTagsDAO mongoTagsDAO, TagMapper tagMapper) {
+    public TagsService(MongoTagsDAO mongoTagsDAO, Mapper tagMapper) {
         this.mongoTagsDAO = mongoTagsDAO;
         this.tagMapper = tagMapper;
     }
 
-//    public List<ClientTagDTO> getTags(List<String> clientsID) {
-//        List<ClientTagDTO> clientTags = new LinkedList<>();
-//        ClientTagsEntity userTagsEntity;
-//        for (String clientID : safe(clientsID)) {
-//            try {
-//                List<Tag> tags = mongoTagsDAO.getUserTagsEntity(UUID.fromString(clientID));
-//                clientTags.add(new ClientTagDTO(clientID,tags));
-//            } catch (IndexOutOfBoundsException | IllegalArgumentException ex) {
-//                // ignore this id
-//            }
-//        }
-//        return clientTags;
-//    }
 
-    public List<Tag> getTagsByClientId(String clientId, int limit, int offset){
-        return mongoTagsDAO.getTagsByClientID(UUID.fromString(clientId),limit,offset);
+    public List<Tag> getTagsByClientId(String clientId, Tag tag, int limit, int offset) {
+        ClientTagEntity entity = new ClientTagEntity(UUID.fromString(clientId), tag);
+        List<ClientTagEntity> clientTagEntities = mongoTagsDAO.getTagsByClientID(entity, limit, offset);
+        return tagMapper.mapToTagList(clientTagEntities);
     }
 
-    public void create(ClientTagDTO clientTagDTO) throws AppException {
+    public List<ClientTagDTO> getTagsWithClientId(Tag tag, int limit, int offset) {
+        List<ClientTagEntity> clientTagEntities = mongoTagsDAO.getClientTags(tag, limit, offset);
+        return tagMapper.mapToDTOList(clientTagEntities);
+    }
+
+    public List<UUID> getClientsUUID(Tag tag, int limit, int offset) {
+        List<ClientTagEntity> clientTagEntities = mongoTagsDAO.getClientTags(tag, limit, offset);
+        List<UUID> ids = new LinkedList<>();
+        for (ClientTagEntity entity : clientTagEntities) {
+            ids.add(entity.getClientId());
+        }
+        return ids;
+    }
+
+    public void create(ClientTagsDTO clientTagDTO) throws AppException {
         UUID uuid;
         try {
             uuid = UUID.fromString(clientTagDTO.getClientId());
@@ -52,11 +56,9 @@ public class TagsService {
         }
 
         for (Tag tag : clientTagDTO.getTags()) {
-            System.out.println(tag.getTag_id());
             try {
-                mongoTagsDAO.create(new ClientTagsEntity(uuid, tag));
-            }catch (DuplicateKeyException ex){
-                System.out.println("blad" + tag.getTag_id());
+                mongoTagsDAO.create(new ClientTagEntity(uuid, tag));
+            } catch (DuplicateKeyException ex) {
                 // ignore this
             }
         }
@@ -74,13 +76,16 @@ public class TagsService {
         return ids;
     }
 
-    public void update(ClientTagDTO clientTagDTO) {
-       // mongoTagsDAO.update(tagMapper.mapToClientTagEntity(clientTagDTO));
+    public void update(ClientTagsDTO clientTagDTO) {
+        // mongoTagsDAO.update(tagMapper.mapToClientTagEntity(clientTagDTO));
     }
 
-    private static<T> List<T> safe(List<T> other) {
+    private static <T> List<T> safe(List<T> other) {
         return other == null ? Collections.EMPTY_LIST : other;
     }
 
 
+    public List<Statistic> getStats(int limit, int offset) {
+        return mongoTagsDAO.getStats(limit,offset);
+    }
 }

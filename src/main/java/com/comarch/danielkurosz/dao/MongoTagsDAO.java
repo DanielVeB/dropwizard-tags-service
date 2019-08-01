@@ -1,7 +1,10 @@
 package com.comarch.danielkurosz.dao;
 
-import com.comarch.danielkurosz.data.ClientTagsEntity;
+import com.comarch.danielkurosz.data.ClientTagEntity;
 import com.comarch.danielkurosz.data.Tag;
+import com.comarch.danielkurosz.dto.Statistic;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBCollection;
 import com.mongodb.DuplicateKeyException;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.query.FindOptions;
@@ -11,7 +14,6 @@ import org.mongodb.morphia.query.UpdateOperations;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 public class MongoTagsDAO {
 
@@ -24,21 +26,9 @@ public class MongoTagsDAO {
 
 
 
-    public List<Tag> getTags(UUID userid) throws IndexOutOfBoundsException {
-
-        Query<ClientTagsEntity> query = this.datastore.createQuery(ClientTagsEntity.class);
-
-        query.field("clientId").equal(userid);
-        List<ClientTagsEntity> resultClients =  query.asList();
-        List<Tag> tags = new LinkedList<>();
-        for(ClientTagsEntity clientTagsEntity : resultClients){
-            tags.add(clientTagsEntity.getTag());
-        }
-        return tags;
-    }
 
     public List<UUID> getClientsId(List<String> withoutTags, List<String> withTags){
-        Query<ClientTagsEntity> query = this.datastore.createQuery(ClientTagsEntity.class);
+        Query<ClientTagEntity> query = this.datastore.createQuery(ClientTagEntity.class);
 
         //searching documents without passed tag_id
         for(String withoutTag : withoutTags){
@@ -49,50 +39,77 @@ public class MongoTagsDAO {
             query = applyToQuery(query,"tags.tag_id",withTag,true);
         }
 
-        List<ClientTagsEntity> list = query.asList();
+        List<ClientTagEntity> list = query.asList();
         List<UUID> uuids = new LinkedList<>();
-        for(ClientTagsEntity entity : list){
+        for(ClientTagEntity entity : list){
             uuids.add(entity.getClientId());
         }
         return uuids;
 
     }
 
-    public List<Tag> getTagsByClientID(UUID clientId, int limit, int skip){
-        Query<ClientTagsEntity> query = this.datastore.createQuery(ClientTagsEntity.class);
+    public List<ClientTagEntity> getTagsByClientID(ClientTagEntity entity, int limit, int skip){
+        Query<ClientTagEntity> query = this.datastore.createQuery(ClientTagEntity.class);
 
-        query.field("clientId").equal(clientId);
+        query.field("clientId").equal(entity.getClientId());
 
-        List<ClientTagsEntity> clientTagsEntities = query.asList(new FindOptions().limit(limit).skip(skip));
-        return clientTagsEntities.stream().map(Tag::new).collect(Collectors.toList());
+        query = applyToQuery(query,"tag.tag_id",entity.getTag().getTag_id(),true);
+        query = applyToQuery(query,"tag.tag_value",entity.getTag().getTag_value(),true);
+
+        return query.asList(new FindOptions().limit(limit).skip(skip));
+    }
+
+    public List<ClientTagEntity> getClientTags(Tag tag, int limit, int skip){
+
+        Query<ClientTagEntity> query = this.datastore.createQuery(ClientTagEntity.class);
+
+        query = applyToQuery(query,"tag.tag_id",tag.getTag_id(),true);
+        query = applyToQuery(query,"tag.tag_value",tag.getTag_value(),true);
+
+        return query.asList(new FindOptions().limit(limit).skip(skip));
     }
 
 
-    public ClientTagsEntity create(ClientTagsEntity clientTagsEntity) throws DuplicateKeyException {
+    public ClientTagEntity create(ClientTagEntity clientTagsEntity) throws DuplicateKeyException {
         datastore.save(clientTagsEntity);
 
         return clientTagsEntity;
     }
 
-    void update(ClientTagsEntity userTagsEntity){
+    void update(ClientTagEntity userTagsEntity){
 
 
     }
 
-    private UpdateOperations<ClientTagsEntity> pushTag(UpdateOperations<ClientTagsEntity> update, Tag tag){
+    private UpdateOperations<ClientTagEntity> pushTag(UpdateOperations<ClientTagEntity> update, Tag tag){
         update.addToSet("tags", tag);
         return update;
     }
 
 
-    private Query<ClientTagsEntity> applyToQuery(Query<ClientTagsEntity> query, String fieldName, String fieldValue, boolean equal){
-        if(equal){
-            return query.field(fieldName).equal(fieldValue);
-        }else{
-            return query.field(fieldName).notEqual(fieldValue);
+    private Query<ClientTagEntity> applyToQuery(Query<ClientTagEntity> query, String fieldName, String fieldValue, boolean equal){
+        if(fieldValue!= null) {
+            return equal? query.field(fieldName).equal(fieldValue) : query.field(fieldName).notEqual(fieldValue);
         }
+        return query;
     }
 
 
+    public List<Statistic> getStats(int limit, int offset) {
 
+        Query<ClientTagEntity> query = this.datastore.createQuery(ClientTagEntity.class);
+
+        DBCollection collection = datastore.getCollection(ClientTagEntity.class);
+        List ids = collection.distinct("clientId",new BasicDBObject());
+
+        for(Object id : ids){
+            query.field("clientId").equal(id);
+            //long amountOfTags =collection.find(query).count();
+            //System.out.println(id + "  "+ amountOfTags);
+        }
+
+        List<Statistic> stats = new LinkedList<>();
+        return stats;
+
+    }
 }

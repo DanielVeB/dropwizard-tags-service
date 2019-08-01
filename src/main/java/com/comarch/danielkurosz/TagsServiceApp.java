@@ -7,7 +7,7 @@ import com.comarch.danielkurosz.dao.MongoTagsDAO;
 import com.comarch.danielkurosz.exceptions.AppExceptionMapper;
 import com.comarch.danielkurosz.health.RestCheck;
 import com.comarch.danielkurosz.resources.TagsResource;
-import com.comarch.danielkurosz.service.TagMapper;
+import com.comarch.danielkurosz.service.Mapper;
 import com.comarch.danielkurosz.service.TagsService;
 import io.dropwizard.Application;
 import io.dropwizard.auth.AuthFactory;
@@ -28,7 +28,7 @@ public class TagsServiceApp extends Application<TagsServiceConfiguration> {
     @Override
     public void run(TagsServiceConfiguration configuration, Environment environment) {
 
-        TagMapper tagMapper = new TagMapper();
+        Mapper tagMapper = new Mapper();
 
         datastore = MongoDatabaseConfigurator.configureMongo();
         MongoTagsDAO mongoTagsDAO = new MongoTagsDAO(datastore);
