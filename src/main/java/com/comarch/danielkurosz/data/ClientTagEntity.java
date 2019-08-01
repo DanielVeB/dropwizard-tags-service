@@ -9,7 +9,7 @@ import java.util.UUID;
 @Indexes({@Index(fields = {@Field("clientId")},options = @IndexOptions(unique = false)),
         @Index(fields = {@Field("clientId"), @Field("tag.tag_id")}, options = @IndexOptions(unique = true))})
 
-public class ClientTagsEntity {
+public class ClientTagEntity {
 
     @Id
     private ObjectId id;
@@ -17,10 +17,10 @@ public class ClientTagsEntity {
     private Tag tag;
 
 
-    public ClientTagsEntity() {
+    public ClientTagEntity() {
     }
 
-    public ClientTagsEntity(UUID clientId, Tag tag) {
+    public ClientTagEntity(UUID clientId, Tag tag) {
         this.clientId = clientId;
         this.tag = tag;
     }

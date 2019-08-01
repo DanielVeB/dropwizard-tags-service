@@ -15,7 +15,7 @@ public class Tag {
         this.tag_value = tag_value;
     }
 
-    public Tag(ClientTagsEntity clientTagsEntity){
+    public Tag(ClientTagEntity clientTagsEntity){
         this.tag_id = clientTagsEntity.getTag().getTag_id();
         this.tag_value = clientTagsEntity.getTag().getTag_value();
     }

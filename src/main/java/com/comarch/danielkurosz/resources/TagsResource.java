@@ -4,6 +4,8 @@ import com.codahale.metrics.annotation.Timed;
 import com.comarch.danielkurosz.auth.UserAuth;
 import com.comarch.danielkurosz.data.Tag;
 import com.comarch.danielkurosz.dto.ClientTagDTO;
+import com.comarch.danielkurosz.dto.ClientTagsDTO;
+import com.comarch.danielkurosz.dto.Statistic;
 import com.comarch.danielkurosz.exceptions.AppException;
 import com.comarch.danielkurosz.service.TagsService;
 import io.dropwizard.auth.Auth;
@@ -13,6 +15,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 @Path("/tags")
@@ -29,53 +32,74 @@ public class TagsResource {
 
     @GET
     @Timed
-    @Path("/clients")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getTags(@Auth UserAuth userAuth,
-                            @QueryParam("client_id") List<String> clientsId) {
-
-        LOGGER.info("get tags");
-//        List<ClientTagDTO> clientTagDTOs= tagsService.getTags(clientsId);
-//        return Response.ok(clientTagDTOs).build();
-        return null;
-    }
-
-    @GET
-    @Timed
-    @Path("/clients/id")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getClientIdsByTags(@Auth UserAuth userAuth,
-                                       @QueryParam("tag_id!")List<String> notExistTagsId,
-                                       @QueryParam("tag_id") List<String> tagsId){
-
-        LOGGER.info("Get clients id without tags: " + notExistTagsId +" or/and with tags "+ tagsId);
-
-        List<String> clientsId = tagsService.getClientsId(notExistTagsId,tagsId);
-        return Response.ok(clientsId).build();
-    }
-
-    @GET
-    @Timed
-    @Path("client={id}")
+    @Path("/client={client_id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response getTagsByClientId(@Auth UserAuth userAuth,
-                                      @PathParam("id") String clientId,
-                                      @QueryParam("limit")@Min(0)@DefaultValue("10")int limit,
-                                      @QueryParam("offset")@Min(0)@DefaultValue("0")int offset){
-        List<Tag> tags = tagsService.getTagsByClientId(clientId,limit,offset);
+                                      @PathParam("client_id") String clientId,
+                                      @QueryParam("tag_id") String tagId,
+                                      @QueryParam("tag_value") String tagValue,
+                                      @QueryParam("limit") @Min(0) @DefaultValue("10") int limit,
+                                      @QueryParam("offset") @Min(0) @DefaultValue("0") int offset) {
+
+        LOGGER.info("Get tags for client with id: "+ clientId);
+
+        List<Tag> tags = tagsService.getTagsByClientId(clientId, new Tag(tagId, tagValue), limit, offset);
         return Response.ok(tags).build();
     }
 
+    @GET
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getTagsWithClientId(@Auth UserAuth userAuth,
+                                       @QueryParam("tag_id") String tagId,
+                                       @QueryParam("tag_value") String tagValue,
+                                       @QueryParam("limit") @Min(0) @DefaultValue("10") int limit,
+                                       @QueryParam("offset") @Min(0) @DefaultValue("0") int offset) {
 
+        LOGGER.info("get tags with client id ");
 
+        Tag tag = new Tag(tagId, tagValue);
+        List<ClientTagDTO> tags = tagsService.getTagsWithClientId(tag, limit, offset);
+        return Response.ok(tags).build();
+    }
+
+    @GET
+    @Path("/clients_id")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getClientsId(@Auth UserAuth userAuth,
+                                 @QueryParam("tag_id") String tagId,
+                                 @QueryParam("tag_value") String tagValue,
+                                 @QueryParam("limit") @Min(0) @DefaultValue("10") int limit,
+                                 @QueryParam("offset") @Min(0) @DefaultValue("0") int offset) {
+
+        LOGGER.info("get clients id ");
+
+        Tag tag = new Tag(tagId, tagValue);
+        List<UUID> tags = tagsService.getClientsUUID(tag, limit, offset);
+        return Response.ok(tags).build();
+    }
+
+    @GET
+    @Timed
+    @Path("/stats")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getStatistics(@Auth UserAuth userAuth,
+                                  @QueryParam("limit") @Min(0) @DefaultValue("10") int limit,
+                                  @QueryParam("offset") @Min(0) @DefaultValue("0") int offset){
+        LOGGER.info("Get statistics");
+
+        List<Statistic> stats = tagsService.getStats(limit,offset);
+        return Response.ok(stats).build();
+    }
 
     @POST
     @Timed
     @Path("/client")
     @Produces(MediaType.APPLICATION_JSON)
     public void create(@Auth UserAuth userAuth,
-                           ClientTagDTO clientTagDTO) throws AppException {
+                       ClientTagsDTO clientTagDTO) throws AppException {
 
         LOGGER.info("create User with id " + clientTagDTO.getClientId());
         tagsService.create(clientTagDTO);
@@ -87,9 +111,9 @@ public class TagsResource {
     @Timed
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public void addZodiac(@Auth UserAuth userAuth, ClientTagDTO clientTagDTO){
+    public void addZodiac(@Auth UserAuth userAuth, ClientTagsDTO clientTagDTO) {
 
-        LOGGER.info("update tags for client with id: "+ clientTagDTO.getClientId());
+        LOGGER.info("update tags for client with id: " + clientTagDTO.getClientId());
         tagsService.update(clientTagDTO);
 
     }
