@@ -5,7 +5,7 @@ import com.comarch.danielkurosz.auth.UserAuth;
 import com.comarch.danielkurosz.data.Tag;
 import com.comarch.danielkurosz.dto.ClientTagDTO;
 import com.comarch.danielkurosz.dto.ClientTagsDTO;
-import com.comarch.danielkurosz.dto.Statistic;
+import com.comarch.danielkurosz.dto.Statistics;
 import com.comarch.danielkurosz.exceptions.AppException;
 import com.comarch.danielkurosz.service.TagsService;
 import io.dropwizard.auth.Auth;
@@ -86,11 +86,12 @@ public class TagsResource {
     @Path("/stats")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getStatistics(@Auth UserAuth userAuth,
+                                  @QueryParam("sort") @DefaultValue("0") int sort,
                                   @QueryParam("limit") @Min(0) @DefaultValue("10") int limit,
                                   @QueryParam("offset") @Min(0) @DefaultValue("0") int offset){
         LOGGER.info("Get statistics");
 
-        List<Statistic> stats = tagsService.getStats(limit,offset);
+        List<Statistics> stats = tagsService.getStats(limit,offset,sort);
         return Response.ok(stats).build();
     }
 

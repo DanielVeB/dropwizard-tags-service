@@ -28,6 +28,8 @@ dependencies {
     compile group: 'io.dropwizard', name: 'dropwizard-auth', version: '0.8.1'
     // https://mvnrepository.com/artifact/com.googlecode.json-simple/json-simple
     compile group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1'
+// https://mvnrepository.com/artifact/com.querydsl/querydsl-mongodb
+    compile group: 'com.querydsl', name: 'querydsl-mongodb', version: '4.0.0'
 
     // https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient
     compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5'

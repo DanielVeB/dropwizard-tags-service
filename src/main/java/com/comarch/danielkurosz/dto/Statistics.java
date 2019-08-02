@@ -1,16 +1,16 @@
 package com.comarch.danielkurosz.dto;
 
-public class Statistic {
+public class Statistics {
 
     private String clientId;
-    private int numOfIds;
+    private long numOfIds;
 
-    public Statistic(String clientId, int numOfIds) {
+    public Statistics(String clientId, long numOfIds) {
         this.clientId = clientId;
         this.numOfIds = numOfIds;
     }
 
-    public Statistic() {
+    public Statistics() {
     }
 
     public String getClientId() {
@@ -21,7 +21,7 @@ public class Statistic {
         this.clientId = clientId;
     }
 
-    public int getNumOfIds() {
+    public long getNumOfIds() {
         return numOfIds;
     }
 

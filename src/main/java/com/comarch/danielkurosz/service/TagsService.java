@@ -5,7 +5,7 @@ import com.comarch.danielkurosz.data.ClientTagEntity;
 import com.comarch.danielkurosz.data.Tag;
 import com.comarch.danielkurosz.dto.ClientTagDTO;
 import com.comarch.danielkurosz.dto.ClientTagsDTO;
-import com.comarch.danielkurosz.dto.Statistic;
+import com.comarch.danielkurosz.dto.Statistics;
 import com.comarch.danielkurosz.exceptions.AppException;
 import com.comarch.danielkurosz.exceptions.InvalidClientIdException;
 import com.mongodb.DuplicateKeyException;
@@ -85,7 +85,7 @@ public class TagsService {
     }
 
 
-    public List<Statistic> getStats(int limit, int offset) {
-        return mongoTagsDAO.getStats(limit,offset);
+    public List<Statistics> getStats(int limit, int offset, int sortValue) {
+        return mongoTagsDAO.getStats(limit,offset,sortValue);
     }
 }
